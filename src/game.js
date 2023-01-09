@@ -46,7 +46,7 @@ export default class Game {
     createPiece() {
         const index = Math.floor(Math.random() * 7);
         const type = 'IJLOSTZ'[index];
-        const piece = { x:0, y: 0};
+        const piece = {};
         switch (type) {
             case 'I':
                 piece.blocks = [
@@ -108,6 +108,10 @@ export default class Game {
             default:
                 throw new Error('Неизвестный тип фигур');
         }
+
+        piece.x = Math.floor((10 - piece.blocks[0].length) / 2);
+        piece.y = -2;
+
         return  piece;
     }
 
