@@ -3,36 +3,8 @@ export default class Game {
     lines = 0;
     level = 0;
     playfield = this.createPlayfield();
-    activePiece = {
-        x: 0,
-        y: 0,
-        get blocks() {
-            return this.rotations[this.rotationIndex];
-        },
-        rotationIndex: 0,
-        rotations: [
-            [
-                [0,1,0],
-                [1,1,1],
-                [0,0,0]
-            ],
-            [
-                [0,1,0],
-                [0,1,1],
-                [0,1,0]
-            ],
-            [
-                [0,0,0],
-                [1,1,1],
-                [0,1,0]
-            ],
-            [
-                [0,1,0],
-                [1,1,0],
-                [0,1,0]
-            ]
-    ]
-    };
+    activePiece =this.createPiece();
+    nextPiece = this.createPiece();
 
     getState() {
         const playfield = this.createPlayfield();
@@ -50,8 +22,7 @@ export default class Game {
             for (let x = 0; x < blocks[y].length; x++) {
                 if(blocks[y][x]) {
                     playfield[pieceY + y][pieceX + x] = blocks[y][x];
-                }
-                
+                } 
             }
         }
 
@@ -70,6 +41,74 @@ export default class Game {
             } 
         }
         return playfield;
+    }
+
+    createPiece() {
+        const index = Math.floor(Math.random() * 7);
+        const type = 'IJLOSTZ'[index];
+        const piece = { x:0, y: 0};
+        switch (type) {
+            case 'I':
+                piece.blocks = [
+                    [0,0,0,0],
+                    [1,1,1,1],
+                    [0,0,0,0],
+                    [0,0,0,0],
+                ];
+                break;
+            case 'J':
+                piece.blocks = [
+                    [0,0,0],
+                    [1,1,1],
+                    [0,0,1]
+                ];
+                break;
+
+            case 'L':
+                piece.blocks = [
+                    [0,0,0],
+                    [1,1,1],
+                    [1,0,0]
+                ];
+                break;
+
+            case 'O':
+                piece.blocks = [
+                    [0,0,0,0],
+                    [0,1,1,0],
+                    [0,1,1,0],
+                    [0,0,0,0]
+                ];
+                break;
+
+            case 'S':
+                piece.blocks = [
+                    [0,0,0],
+                    [0,1,1],
+                    [1,1,0]
+                ];
+                break;
+
+            case 'T':
+                piece.blocks = [
+                    [0,0,0],
+                    [1,1,1],
+                    [0,1,0]
+                ];
+                break;
+
+            case 'Z':
+                piece.blocks = [
+                    [0,0,0],
+                    [1,1,0],
+                    [0,1,1]
+                ];
+                break;
+
+            default:
+                throw new Error('Неизвестный тип фигур');
+        }
+        return  piece;
     }
 
     movePieceLeft() {
@@ -94,16 +133,41 @@ export default class Game {
         if (this.hasCollision()) {
             this.activePiece.y -= 1;
             this.lockPiece();
+            this.updatePieces();
         }
     }
 
     rotatePiece() {
-        this.activePiece.rotationIndex = this.activePiece.rotationIndex < 3 ? this.activePiece.rotationIndex + 1 : 0;
-        if (this.hasCollision()) {
-            this.activePiece.rotationIndex = this.activePiece.rotationIndex > 0 ? this.activePiece.rotationIndex - 1 : 3;
-        }
+        this.rotateBlocks();
 
-        return this.activePiece.blocks;
+        if (this.hasCollision()) {
+            this.rotateBlocks(false);
+        }
+    }
+
+    rotateBlocks(clockwise = true) {
+        const blocks = this.activePiece.blocks;
+        const length = blocks.length;
+        const x = Math.floor(length / 2);
+        const y = length - 1;
+
+        for (let i = 0; i < x; i++) {
+            for  (let j = i; j < y - i; j++) {
+                const temp = blocks[i][j];
+
+                if(clockwise) {
+                    blocks[i][j] = blocks[y - j][i];
+                    blocks[y - j][i] = blocks[y - i][y - j];
+                    blocks[y - i][y - j] = blocks[j][y - i]
+                    blocks[j][y - i] = temp;
+                } else {
+                    blocks[i][j] = blocks[j][y - i];
+                    blocks[j][y - i] = blocks[y - i][y - j];
+                    blocks[y - i][y - j] = blocks[y - j][i]
+                    blocks[y - j][i] = temp;
+                }
+            }
+        }
     }
 
     hasCollision() {
@@ -133,5 +197,10 @@ export default class Game {
                 }
             }
         }
+    }
+
+    updatePieces() {
+        this.activePiece = this.nextPiece;
+        this.nextPiece = this.createPiece();
     }
 }
