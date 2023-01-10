@@ -6,7 +6,7 @@ export default class View {
         '4': 'purple',
         '5': 'green',
         '6': 'red',
-        '7': 'yellow',
+        '7': 'yellow'
     };
 
     constructor(element,width,height,rows,columns) {
