@@ -1,10 +1,20 @@
 export default class Game {
+    static points = {
+        '1': 50,
+        '2': 100,
+        '3': 500,
+        '4': 1000,
+    };
+
     score = 0;
     lines = 0;
-    level = 0;
     playfield = this.createPlayfield();
     activePiece =this.createPiece();
     nextPiece = this.createPiece();
+
+    get level() {
+        return Math.floor(this.lines * 0.1);
+    }
 
     getState() {
         const playfield = this.createPlayfield();
@@ -137,7 +147,8 @@ export default class Game {
         if (this.hasCollision()) {
             this.activePiece.y -= 1;
             this.lockPiece();
-            this.clearLines();
+            const clearedLines = this.clearLines();
+            this.updateScore(clearedLines);
             this.updatePieces();
         }
     }
@@ -230,6 +241,17 @@ export default class Game {
         for (let index of lines) {
             this.playfield.splice(index, 1);
             this.playfield.unshift(new Array(columns).fill(0));
+        }
+
+        return lines.length;
+    }
+
+    updateScore(clearedLines) {
+        console.log(this.level);
+        if (clearedLines > 0) {
+            this.score += Game.points[clearedLines] * (this.level + 1);
+            this.lines += clearedLines;
+            console.log(this.score, this.lines, this.level);
         }
     }
 
