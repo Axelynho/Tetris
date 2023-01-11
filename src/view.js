@@ -80,8 +80,10 @@ export default class View {
 
     renderPlayfield({ playfield }) {
         for (let y = 0; y < playfield.length; y++) {
-            for (let x = 0; x < playfield[y].length; x++) {
-                const block = playfield[y][x];
+            const line = playfield[y];
+
+            for (let x = 0; x < line.length; x++) {
+                const block = line[x];
                 
                 if(block) {
                     this.renderBlock(
@@ -109,9 +111,9 @@ export default class View {
         this.context.fillText(`Score: ${score}`,this.panelX,this.panelY + 0);
         this.context.fillText(`Lines: ${lines}`,this.panelX,this.panelY + 24);
         this.context.fillText(`Level: ${level}`,this.panelX,this.panelY + 48);
-        this.context.fillText('Next:',this.panelX,this.panelY + 96);
+        this.context.fillText(`Next:`,this.panelX,this.panelY + 96);
 
-        for (let y = 0; y < nextPiece.block.length; y++) {
+        for (let y = 0; y < nextPiece.blocks.length; y++) {
             for (let x = 0; x < nextPiece.blocks[y].length; x++) {
                 const block = nextPiece.blocks[y][x];
 

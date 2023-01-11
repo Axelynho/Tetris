@@ -59,7 +59,8 @@ export default class Game {
 
     createPiece() {
         const index = Math.floor(Math.random() * 7);
-        const type = 'IJLOSTZ'[index];
+        const types = 'IJLOSTZ';
+        const type = types[index];
         const piece = {};
         switch (type) {
             case 'I':
