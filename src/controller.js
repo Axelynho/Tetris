@@ -6,6 +6,7 @@ export default class Contoller {
         this.isPlaying = false;
 
         document.addEventListener('keydown',this.handleKeyDown.bind(this));
+        document.addEventListener('keydown',this.handleKeyUp.bind(this));
 
         this.view.renderStartScreen();
     }
@@ -13,6 +14,18 @@ export default class Contoller {
     update() {
         this.game.movePieceDown();
         this.updateView();
+    }
+
+    updateView() {
+        const state = this.game.getState();
+
+        if (state.isGameOver) {
+            this.view.renderEndScreen(state)
+        } else if (!this.isPlaying) {
+            this.view.renderPauseScreen();
+        } else {
+            this.view.renderMainScreen(state);
+        }
     }
 
     play() {
@@ -27,18 +40,18 @@ export default class Contoller {
         this.updateView();
     }
 
-    updateView() {
-        if (!this.isPlaying) {
-            this.view.renderPauseScreen();
-        } else {
-            this.view.renderMainScreen(this.game.getState());
-        }
+    reset() {
+        this.game.reset();
+        this.play();
     }
 
+
     startTimer() {
+        const speed = 1000 - this.game.getState().level * 100
+
         if (!this.intervalId) {this.intervalId = setInterval(() => {
             this.update();
-            }, 1000);
+            }, speed > 0 ? speed : 100);
         }
     }
 
@@ -50,9 +63,13 @@ export default class Contoller {
     }
 
     handleKeyDown(event) {
+        const state = this.game.getState();
+
         switch (event.keyCode) {
             case 13: // ENTER
-            if(this.isPlaying) {
+            if (state.isGameOver) {
+                this.reset();
+            } else if(this.isPlaying) {
                 this.pause();
             } else {
                 this.play();
@@ -60,20 +77,29 @@ export default class Contoller {
             break;
             case 37: //left
                 game.movePieceLeft();
-                view.renderMainScreen(this.game.getState());
+                this.updateView();
                 break;
             case 38: // up
                 game.rotatePiece();
-                view.renderMainScreen(this.game.getState());
+                this.updateView();
                 break;
             case 39: // right
             game.movePieceRight();
-            view.renderMainScreen(this.game.getState());
+            this.updateView();
                 break;
             case 40: // down
+            this.stopTimer();
             game.movePieceDown();
-            view.renderMainScreen(this.game.getState());
+            this.updateView();
                 break;
+            }
+        }
+
+        handleKeyUp(event) { 
+            switch (event.keyCode) {
+                case 40: // down
+                    this.startTimer();
+                    break;
             }
         }
     }
