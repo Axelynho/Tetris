@@ -7,7 +7,7 @@ export default class View {
         '5': 'green',
         '6': 'red',
         '7': 'yellow'
-    };
+    }
 
     constructor(element,width,height,rows,columns) {
         this.element = element;
@@ -25,7 +25,7 @@ export default class View {
         this.playfieldWidth = this.width * 2 / 3;
         this.playfieldHeight = this.height;
         this.playfieldInnerWidth = this.playfieldWidth - this.playfieldBorderWidth * 2;
-        this.playfieldInnerHeight = this.playfieldHight - this.playfieldBorderWidth * 2;
+        this.playfieldInnerHeight = this.playfieldHeight - this.playfieldBorderWidth * 2;
 
         this.blockWidth = this.playfieldInnerWidth / columns;
         this.blockHeight = this.playfieldInnerHeight / rows;
